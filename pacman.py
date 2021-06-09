@@ -14,10 +14,19 @@ yellow = ( 255, 255, 0)
 ghostIcon = pygame.image.load('images/Blinky.png')
 pygame.display.set_icon(ghostIcon)
 
-#Add music
+# Initialize sounds/music
 pygame.mixer.init()
-pygame.mixer.music.load('pacman.mp3')
-pygame.mixer.music.play(-1, 0.0)
+
+opening_sound = pygame.mixer.Sound('sounds/pacman_beginning.wav')
+munch_sound = pygame.mixer.Sound('sounds/pacman_chomp.wav')
+eatghost_sound = pygame.mixer.Sound('sounds/pacman_eatghost.wav')
+death_sound = pygame.mixer.Sound('sounds/pacman_death.wav')
+
+munch_channel = pygame.mixer.Channel(1)
+
+# Play opening sound 
+pygame.mixer.music.load('sounds/pacman_beginning.wav')
+opening_sound.play()
 
 # This class represents the bar at the bottom that the player controls
 class Wall(pygame.sprite.Sprite):
@@ -197,7 +206,7 @@ class Player(pygame.sprite.Sprite):
             self.rect.left = old_x
             self.rect.top = old_y
 
-#Inheritime Player klassist
+# Inheritime Player klassist
 class Ghost(Player):
     # Change the speed of the ghost
     def changespeed(self, list, ghost, turn, steps, l):
@@ -478,7 +487,7 @@ def startGame():
       # ALL EVENT PROCESSING SHOULD GO ABOVE THIS COMMENT
    
       # ALL GAME LOGIC SHOULD GO BELOW THIS COMMENT
-      Pacman.update(wall_list,gate)
+      Pacman.update(wall_list, gate)
 
       returned = Pinky.changespeed(Pinky_directions, False, p_turn, p_steps, pl)
       p_turn = returned[0]
@@ -509,7 +518,8 @@ def startGame():
        
       # Check the list of collisions.
       if len(blocks_hit_list) > 0:
-          score += len(blocks_hit_list)
+          score += len(blocks_hit_list)          
+          munch_channel.queue(munch_sound)
       
       # ALL GAME LOGIC SHOULD GO ABOVE THIS COMMENT
    
@@ -521,7 +531,7 @@ def startGame():
       sprite_list.draw(screen)
       monster_list.draw(screen)
 
-      text=font.render("Score: " + str(score) + "/" + str(bll), True, red)
+      text = font.render("Score: " + str(score) + "/" + str(bll), True, red)
       screen.blit(text, [10, 10])
 
       if score == bll:
